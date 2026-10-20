@@ -3,10 +3,11 @@
 
 #include <tonc.h>
 
-void init_gfx(void);
+#define NUM_HW_SPRITES 128
+// OAM shadow buffer
+extern OBJ_ATTR obj_buffer[NUM_HW_SPRITES];
+extern OBJ_AFFINE * const obj_aff_buffer;
 
-void update_gfx(void);
-
-void update_vblank(void);
+void vblank_update_oam(void);
 
 #endif

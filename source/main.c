@@ -1,6 +1,6 @@
 #include <tonc.h>
 
-#include "gfx.h"
+#include "fsm.h"
 
 int main(void) {
 	// Init interrupts and VBlank irq.
@@ -12,17 +12,10 @@ int main(void) {
     // Set start rand seed
     sqran(0);
 
-    init_gfx();
+    init_fsm(STATE_MENU);
 
     while(1) {
-        // Update game logic
-        // Update graphics
-        update_gfx();
-        // Wait for VBlank
-        VBlankIntrWait();
-        // TODO: Maxmod update
-        // Copy OAM shadow buffer etc.
-        update_vblank();
+        run_fsm();
     }
     return 1;
 }
