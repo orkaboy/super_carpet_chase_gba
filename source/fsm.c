@@ -1,6 +1,9 @@
 #include "fsm.h"
+
 #include "menu_state.h"
 #include "gfx.h"
+
+#include <maxmod.h>
 
 int current_state;
 
@@ -33,6 +36,9 @@ void run_fsm(void) {
 
     // Wait for VBlank
     VBlankIntrWait();
+
+    // Maxmod, update music
+    mmFrame();
 
     // Post-VBlank update (OAM etc.)
     if(states[current_state].vblank) {
