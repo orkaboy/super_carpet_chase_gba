@@ -13,7 +13,7 @@ fsm_t states[] = {
 
 void init_fsm(int state) {
     current_state = state;
-    states[current_state].on_entry();
+    if(states[state].on_entry) states[state].on_entry();
 }
 
 void run_fsm(void) {
