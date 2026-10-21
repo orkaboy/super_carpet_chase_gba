@@ -1,0 +1,3 @@
+# Temp skybox. Shares palette with desert.png
+# 4bpp, 8x8 metatiles (64x64 pixels), single palette
+-gB4 -Mw8 -Mh8 -pn 16

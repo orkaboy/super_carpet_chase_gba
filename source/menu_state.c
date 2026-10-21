@@ -6,10 +6,32 @@
 
 #include "desert.h"
 #include "skybox.h"
+#include "title.h"
 
 #include <tonc.h>
 
 #define MENU_SCROLL_SPEED float2fx(0.05)
+
+void menu_init_sprites(void) {
+    // Setup sprites
+    obj_set_attr(&obj_buffer[0], ATTR0_SQUARE, ATTR1_SIZE_64, ATTR2_PALBANK(0) | 0);
+    obj_set_attr(&obj_buffer[1], ATTR0_SQUARE, ATTR1_SIZE_64, ATTR2_PALBANK(0) | 64);
+    obj_set_attr(&obj_buffer[2], ATTR0_SQUARE, ATTR1_SIZE_64, ATTR2_PALBANK(0) | 128);
+    obj_set_attr(&obj_buffer[3], ATTR0_SQUARE, ATTR1_SIZE_64, ATTR2_PALBANK(0) | 192);
+    obj_set_attr(&obj_buffer[4], ATTR0_SQUARE, ATTR1_SIZE_64, ATTR2_PALBANK(0) | 256);
+    obj_set_attr(&obj_buffer[5], ATTR0_SQUARE, ATTR1_SIZE_64, ATTR2_PALBANK(0) | 320);
+
+    // Temp position
+    int centerx = SCREEN_WIDTH/2;
+    int centery = SCREEN_HEIGHT/2;
+    int hsize = 32; // Half the sprite size
+    obj_set_pos(&obj_buffer[0], centerx - 3*hsize, centery - 2*hsize);
+    obj_set_pos(&obj_buffer[1], centerx - 1*hsize, centery - 2*hsize);
+    obj_set_pos(&obj_buffer[2], centerx + 1*hsize, centery - 2*hsize);
+    obj_set_pos(&obj_buffer[3], centerx - 3*hsize, centery);
+    obj_set_pos(&obj_buffer[4], centerx - 1*hsize, centery);
+    obj_set_pos(&obj_buffer[5], centerx + 1*hsize, centery);
+}
 
 void menu_state_on_entry(void) {
     // Clear sprites
@@ -26,7 +48,11 @@ void menu_state_on_entry(void) {
     LZ77UnCompVram(desertMap, se_mem[24]);
     LZ77UnCompVram(skyboxMap, se_mem[22]);
 
-    // TODO: Setup sprites
+    // Setup sprite tiles
+    memcpy16(&pal_obj_mem[0], titlePal, titlePalLen / sizeof(u16));
+    memcpy32(tile_mem[4], titleTiles, titleTilesLen / sizeof(u32));
+
+    menu_init_sprites();
 
     // Set up mode7
     m7_camera_t cam = {
@@ -46,7 +72,7 @@ void menu_state_on_entry(void) {
     REG_BLDCNT = BLD_BUILD(BLD_BG2, BLD_BACKDROP, 1);
     pal_bg_mem[0] = CLR_SKYBLUE;
 
-    REG_DISPCNT = DCNT_MODE0 | DCNT_BG2;
+    REG_DISPCNT = DCNT_MODE0 | DCNT_BG2 | DCNT_OBJ | DCNT_OBJ_1D;
     // For mode7
 	irq_add(II_HBLANK, (fnptr)m7_hbl_gnd);
 }
