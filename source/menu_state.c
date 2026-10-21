@@ -32,6 +32,9 @@ void menu_state_on_entry(void) {
         // BG2CNT for ground (aff)  // TODO: CBB/SBB
         BG_CBB(0) | BG_SBB(24) | BG_AFF_32x32 | BG_WRAP | BG_PRIO(3)
     );
+    // Initialize fog (alpha blend to BG transparency color)
+    REG_BLDCNT = BLD_BUILD(BLD_BG2, BLD_BACKDROP, 1);
+    pal_bg_mem[0] = CLR_SKYBLUE;
 
     // For mode7
 	irq_add(II_HBLANK, (fnptr)m7_hbl_gnd);
