@@ -29,6 +29,13 @@ void m7_prep_horizon(m7_level_t* level) {
 }
 
 void m7_update_sky(const m7_level_t* level) {
+    // If sky is visible, activate mode0 for next render pass
+    if(level->horizon > 0) {
+        BFN_SET(REG_DISPCNT, DCNT_MODE0, DCNT_MODE);
+        REG_BG2CNT = level->bgcnt_sky;
+        REG_BLDALPHA = 16; // TODO:
+    }
+
     const m7_camera_t* cam = &level->camera;
     // Shift backdrop according to camera rotation around global y-axis (yaw)
     REG_BG2HOFS = (cam->phi >> 6) + M7_LEFT;

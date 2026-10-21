@@ -38,6 +38,9 @@ void menu_state_on_entry(void) {
 int menu_state_update(void) {
     // Handle input
 
+    // Handle mode7 bg
+    m7_prep_horizon(&m7_level);
+    m7_update_sky(&m7_level);
 
     return STATE_MENU;
 }
