@@ -5,7 +5,7 @@
 int current_state;
 
 fsm_t states[] = {
-    {.update = menu_state_update, .vblank = vblank_update_oam, .on_entry = menu_state_on_entry, .on_exit = NULL},
+    {.update = menu_state_update, .vblank = vblank_update_oam, .on_entry = menu_state_on_entry, .on_exit = menu_state_on_exit},
 };
 
 void init_fsm(int state) {
