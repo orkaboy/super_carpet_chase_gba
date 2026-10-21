@@ -41,6 +41,10 @@ void m7_init(m7_level_t* level, u16 skycnt, u16 gndcnt);
 void m7_prep_horizon(m7_level_t* level);
 void m7_update_sky(const m7_level_t* level);
 
+// m7 math functions
+void m7_rotate(m7_camera_t* cam, int phi, int theta);
+void m7_translate_level(m7_camera_t* cam, const VECTOR* dir);
+
 // IWRAM functions (ARM instructions)
 IWRAM_CODE void m7_prep_affines(m7_level_t *level);
 IWRAM_CODE void m7_hbl_gnd(void);

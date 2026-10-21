@@ -6,6 +6,8 @@
 
 #include <tonc.h>
 
+#define MENU_SCROLL_SPEED float2fx(0.05)
+
 void menu_state_on_entry(void) {
     // Clear sprites
     oam_init(obj_buffer, NUM_HW_SPRITES);
@@ -37,6 +39,10 @@ void menu_state_on_entry(void) {
 
 int menu_state_update(void) {
     // Handle input
+
+    // Move camera slowly forward
+    VECTOR dir = {0, 0, MENU_SCROLL_SPEED};
+    m7_translate_level(&m7_level.camera, &dir);
 
     // Handle mode7 bg
     m7_prep_horizon(&m7_level);
