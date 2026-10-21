@@ -1,0 +1,3 @@
+# Temp desert mode7 ground, 32x32 tiles (256x256)
+# 8bpp, map tile reduction affine, map layout affine, LZ77 compression
+-gB8 -mRa -mLa -Zl

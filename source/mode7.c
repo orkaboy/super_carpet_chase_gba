@@ -6,7 +6,7 @@
 void m7_init(m7_level_t* level, u16 skycnt, u16 gndcnt) {
     level->bgcnt_sky = skycnt;
     level->bgcnt_gnd = gndcnt;
-    level->horizon = 80; // TODO: good default? this is calculated anyways.
+    level->horizon = 80; // This is calculated anyways.
 
     REG_BG2CNT = gndcnt;
     REG_BG_AFFINE[2] = bg_aff_default;
@@ -43,7 +43,7 @@ void m7_update_sky(const m7_level_t* level) {
     REG_BG2VOFS = -m7_horizon_line(level) - 1;
 }
 
-void m7_rotate(m7_camera_t* cam, int phi, int theta) {
+void m7_rotate(m7_camera_t* cam, int theta, int phi) {
     // Ensure we aren't looping around when looking up/down
     theta = clamp(theta, -0x3FFF, 0x4001);
     cam->phi = phi;

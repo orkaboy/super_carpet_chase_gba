@@ -42,7 +42,7 @@ void m7_prep_horizon(m7_level_t* level);
 void m7_update_sky(const m7_level_t* level);
 
 // m7 math functions
-void m7_rotate(m7_camera_t* cam, int phi, int theta);
+void m7_rotate(m7_camera_t* cam, int theta, int phi);
 void m7_translate_level(m7_camera_t* cam, const VECTOR* dir);
 
 // IWRAM functions (ARM instructions)

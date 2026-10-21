@@ -1,8 +1,8 @@
 #include <tonc.h>
-// TODO: Music
+
 #include <maxmod.h>
-//#include "soundbank.h"
-//#include "soundbank_bin.h"
+#include "soundbank.h"
+#include "soundbank_bin.h"
 
 #include "fsm.h"
 
@@ -11,10 +11,10 @@ int main(void) {
 	irq_init(NULL);
 	irq_add(II_VBLANK, mmVBlank);
 
-    // TODO: Load Maxmod music
-    //mmInitDefault((mm_addr)soundbank_bin, 8);
-    // TODO: Start the Maxmod music on loop
-    //mmStart(MOD_ARABIA_2, MM_PLAY_LOOP);
+    // Load Maxmod music
+    mmInitDefault((mm_addr)soundbank_bin, 8);
+    // Start the Maxmod music on loop
+    mmStart(MOD_ARABIA_2, MM_PLAY_LOOP);
 
     // Set start rand seed
     sqran(0);
