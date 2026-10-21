@@ -17,6 +17,11 @@ void run_fsm(void) {
     // Get new key input
     key_poll();
 
+    // Check for reset (Se+St+L+R)
+    if(KEY_EQ(key_held, KEY_RESET)) {
+        SoftReset();
+    }
+
     // Handle logic for the current state
     int next_state = states[current_state].update();
     if(next_state != current_state) {
