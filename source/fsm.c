@@ -27,7 +27,9 @@ void run_fsm(void) {
 
     // Handle logic for the current state
     int next_state = states[current_state].update();
+    // Do we need to change state?
     if(next_state != current_state) {
+        // If so, handle tear-down/setup of states
         if(states[current_state].on_exit) states[current_state].on_exit();
         if(states[next_state].on_entry) states[next_state].on_entry();
         current_state = next_state;
