@@ -11,6 +11,39 @@
 #include <tonc.h>
 
 #define MENU_SCROLL_SPEED float2fx(0.05)
+#define TITLE_WAVE_ACCY float2fx(0.01)
+#define TITLE_WAVE_VEL_PEAK float2fx(0.3)
+
+#define CENTER_X (SCREEN_WIDTH/2)
+#define CENTER_Y (SCREEN_HEIGHT/2)
+#define SPRITE_HSIZE (64/2)
+
+
+
+FIXED title_y = 0;
+FIXED title_vely = 0;
+FIXED title_accy = 0;
+
+void _set_title_pos(void) {
+    obj_set_pos(&obj_buffer[0], CENTER_X - 3*SPRITE_HSIZE, fx2int(title_y) + CENTER_Y - 2*SPRITE_HSIZE);
+    obj_set_pos(&obj_buffer[1], CENTER_X - 1*SPRITE_HSIZE, fx2int(title_y) + CENTER_Y - 2*SPRITE_HSIZE);
+    obj_set_pos(&obj_buffer[2], CENTER_X + 1*SPRITE_HSIZE, fx2int(title_y) + CENTER_Y - 2*SPRITE_HSIZE);
+    obj_set_pos(&obj_buffer[3], CENTER_X - 3*SPRITE_HSIZE, fx2int(title_y) + CENTER_Y);
+    obj_set_pos(&obj_buffer[4], CENTER_X - 1*SPRITE_HSIZE, fx2int(title_y) + CENTER_Y);
+    obj_set_pos(&obj_buffer[5], CENTER_X + 1*SPRITE_HSIZE, fx2int(title_y) + CENTER_Y);
+}
+
+void _update_title_wave(void) {
+    title_vely += title_accy;
+    title_y += title_vely;
+    if(title_vely > TITLE_WAVE_VEL_PEAK) {
+        title_accy = -TITLE_WAVE_ACCY;
+    } else if(title_vely < -TITLE_WAVE_VEL_PEAK) {
+        title_accy = TITLE_WAVE_ACCY;
+    }
+    // Update the sprite positions
+    _set_title_pos();
+}
 
 void menu_init_sprites(void) {
     // Setup sprites
@@ -22,15 +55,8 @@ void menu_init_sprites(void) {
     obj_set_attr(&obj_buffer[5], ATTR0_SQUARE, ATTR1_SIZE_64, ATTR2_PALBANK(0) | 320);
 
     // Temp position
-    int centerx = SCREEN_WIDTH/2;
-    int centery = SCREEN_HEIGHT/2;
-    int hsize = 32; // Half the sprite size
-    obj_set_pos(&obj_buffer[0], centerx - 3*hsize, centery - 2*hsize);
-    obj_set_pos(&obj_buffer[1], centerx - 1*hsize, centery - 2*hsize);
-    obj_set_pos(&obj_buffer[2], centerx + 1*hsize, centery - 2*hsize);
-    obj_set_pos(&obj_buffer[3], centerx - 3*hsize, centery);
-    obj_set_pos(&obj_buffer[4], centerx - 1*hsize, centery);
-    obj_set_pos(&obj_buffer[5], centerx + 1*hsize, centery);
+    title_accy = -TITLE_WAVE_ACCY;
+    _set_title_pos();
 }
 
 void menu_state_on_entry(void) {
@@ -90,6 +116,9 @@ int menu_state_update(void) {
     m7_prep_horizon(&m7_level);
     m7_update_sky(&m7_level);
     m7_prep_affines(&m7_level);
+
+    // Move the title up and down
+    _update_title_wave();
 
     return STATE_MENU;
 }

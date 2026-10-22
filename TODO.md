@@ -11,6 +11,7 @@
 [ ] Mode7 background
     [x] Tech
     [x] Camera movement
+        [ ] Figure out the resolution on theta/phi
     [x] The background + tile-map
     [x] Skybox
         [x] Scroll effect
