@@ -4,7 +4,15 @@
 [ ] Gamestate
     [x] FSM structure for overarching game states (menu/cutscene/game etc.)
     [x] Menu
+        [ ] Fade to black
+        [ ] Add "Super"
+        [ ] Add "Press Start"
     [ ] Intro
+        [ ] Text engine/font (use tte? or just a bitmap font?)
+        [ ] Graphics
+            [ ] BG, wizards
+            [ ] Special effects (palette swap)
+        [ ] Script/storyboard
     [ ] Game
     [ ] Game Over
     [ ] Outro

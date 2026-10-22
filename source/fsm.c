@@ -1,6 +1,12 @@
 #include "fsm.h"
 
+// States
 #include "menu_state.h"
+#include "intro_state.h"
+#include "game_state.h"
+#include "outro_state.h"
+#include "game_over_state.h"
+
 #include "gfx.h"
 
 #include <maxmod.h>
@@ -8,7 +14,11 @@
 int current_state;
 
 fsm_t states[] = {
-    {.update = menu_state_update, .vblank = vblank_update_oam, .on_entry = menu_state_on_entry, .on_exit = menu_state_on_exit},
+    /* STATE_MENU       */ {.update = menu_state_update, .vblank = vblank_update_oam, .on_entry = menu_state_on_entry, .on_exit = menu_state_on_exit},
+    /* STATE_INTRO      */ {.update = intro_state_update, .vblank = vblank_update_oam, .on_entry = intro_state_on_entry, .on_exit = intro_state_on_exit},
+    /* STATE_GAME       */ {.update = game_state_update, .vblank = vblank_update_oam, .on_entry = game_state_on_entry, .on_exit = game_state_on_exit},
+    /* STATE_OUTRO      */ {.update = outro_state_update, .vblank = vblank_update_oam, .on_entry = outro_state_on_entry, .on_exit = outro_state_on_exit},
+    /* STATE_GAME_OVER  */ {.update = game_over_state_update, .vblank = vblank_update_oam, .on_entry = game_over_state_on_entry, .on_exit = game_over_state_on_exit},
 };
 
 void init_fsm(int state) {

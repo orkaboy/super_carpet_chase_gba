@@ -3,6 +3,6 @@
 
 void intro_state_on_entry(void);
 int intro_state_update(void);
-void intro_state_vblank(void);
+void intro_state_on_exit(void);
 
 #endif

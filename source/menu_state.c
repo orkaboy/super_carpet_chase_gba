@@ -18,8 +18,7 @@
 #define CENTER_Y (SCREEN_HEIGHT/2)
 #define SPRITE_HSIZE (64/2)
 
-
-
+// Title wave motion
 FIXED title_y = 0;
 FIXED title_vely = 0;
 FIXED title_accy = 0;
@@ -47,19 +46,20 @@ void _update_title_wave(void) {
 
 void menu_init_sprites(void) {
     // Setup sprites
-    obj_set_attr(&obj_buffer[0], ATTR0_SQUARE, ATTR1_SIZE_64, ATTR2_PALBANK(0) | 0);
-    obj_set_attr(&obj_buffer[1], ATTR0_SQUARE, ATTR1_SIZE_64, ATTR2_PALBANK(0) | 64);
-    obj_set_attr(&obj_buffer[2], ATTR0_SQUARE, ATTR1_SIZE_64, ATTR2_PALBANK(0) | 128);
-    obj_set_attr(&obj_buffer[3], ATTR0_SQUARE, ATTR1_SIZE_64, ATTR2_PALBANK(0) | 192);
-    obj_set_attr(&obj_buffer[4], ATTR0_SQUARE, ATTR1_SIZE_64, ATTR2_PALBANK(0) | 256);
-    obj_set_attr(&obj_buffer[5], ATTR0_SQUARE, ATTR1_SIZE_64, ATTR2_PALBANK(0) | 320);
-
+    for(int i = 0; i < 6; ++i) {
+        obj_set_attr(&obj_buffer[i], ATTR0_SQUARE, ATTR1_SIZE_64, ATTR2_PALBANK(0) | (64 * i));
+    }
     // Temp position
     title_accy = -TITLE_WAVE_ACCY;
     _set_title_pos();
 }
 
 void menu_state_on_entry(void) {
+    // Title wave motion
+    title_y = 0;
+    title_vely = 0;
+    title_accy = 0;
+
     // Clear sprites
     oam_init(obj_buffer, NUM_HW_SPRITES);
 
@@ -105,6 +105,10 @@ void menu_state_on_entry(void) {
 
 int menu_state_update(void) {
     // Handle input
+    if(key_hit(KEY_START)) {
+        // TODO: Add fate to black
+        return STATE_INTRO;
+    }
 
     // Set camera rotation
     m7_rotate(&m7_level.camera, int2fx(7), 0);
@@ -125,4 +129,5 @@ int menu_state_update(void) {
 
 void menu_state_on_exit(void) {
 	irq_delete(II_HBLANK);
+    REG_DISPCNT = 0;
 }
