@@ -23,7 +23,7 @@
     [x] The background + tile-map
     [x] Skybox
         [x] Scroll effect
-        [ ] Fix the sky palette being wrong (shared with desert bg)
+        [x] Fix the sky palette being wrong (shared with desert bg)
 [ ] Graphics
     [ ] Player sprite + carpet
     [ ] Boss sprite + carpet

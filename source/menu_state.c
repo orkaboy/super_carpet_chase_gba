@@ -7,6 +7,7 @@
 #include "desert.h"
 #include "skybox.h"
 #include "title.h"
+#include "bgpal.h"
 
 #include <tonc.h>
 
@@ -64,7 +65,7 @@ void menu_state_on_entry(void) {
     oam_init(obj_buffer, NUM_HW_SPRITES);
 
     // Load palettes
-    LZ77UnCompVram(desertPal, pal_bg_mem);
+    LZ77UnCompVram(bgPal, pal_bg_mem);
 
     // Load tiles
     LZ77UnCompVram(desertTiles, tile_mem[0]);
