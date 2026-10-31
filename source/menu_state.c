@@ -118,7 +118,7 @@ void menu_state_on_entry(void) {
 int menu_state_update(void) {
     // Handle input
     if(key_hit(KEY_START)) {
-        // TODO: Add fate to black
+        // TODO: Add fade to black
         return STATE_INTRO;
     }
 
