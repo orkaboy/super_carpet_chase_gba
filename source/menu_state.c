@@ -7,6 +7,7 @@
 #include "desert.h"
 #include "skybox.h"
 #include "title.h"
+#include "super.h"
 #include "bgpal.h"
 
 #include <tonc.h>
@@ -19,18 +20,23 @@
 #define CENTER_Y (SCREEN_HEIGHT/2)
 #define SPRITE_HSIZE (64/2)
 
+#define TITLE_TILES (8*8*6) // 384
+
 // Title wave motion
 FIXED title_y = 0;
 FIXED title_vely = 0;
 FIXED title_accy = 0;
 
 void _set_title_pos(void) {
-    obj_set_pos(&obj_buffer[0], CENTER_X - 3*SPRITE_HSIZE, fx2int(title_y) + CENTER_Y - 2*SPRITE_HSIZE);
-    obj_set_pos(&obj_buffer[1], CENTER_X - 1*SPRITE_HSIZE, fx2int(title_y) + CENTER_Y - 2*SPRITE_HSIZE);
-    obj_set_pos(&obj_buffer[2], CENTER_X + 1*SPRITE_HSIZE, fx2int(title_y) + CENTER_Y - 2*SPRITE_HSIZE);
-    obj_set_pos(&obj_buffer[3], CENTER_X - 3*SPRITE_HSIZE, fx2int(title_y) + CENTER_Y);
-    obj_set_pos(&obj_buffer[4], CENTER_X - 1*SPRITE_HSIZE, fx2int(title_y) + CENTER_Y);
-    obj_set_pos(&obj_buffer[5], CENTER_X + 1*SPRITE_HSIZE, fx2int(title_y) + CENTER_Y);
+    // Super
+    obj_set_pos(&obj_buffer[0], CENTER_X - 90, fx2int(title_y) + CENTER_Y - 64);
+    // Carpet Chase
+    obj_set_pos(&obj_buffer[1], CENTER_X - 3*SPRITE_HSIZE, fx2int(title_y) + CENTER_Y - 2*SPRITE_HSIZE);
+    obj_set_pos(&obj_buffer[2], CENTER_X - 1*SPRITE_HSIZE, fx2int(title_y) + CENTER_Y - 2*SPRITE_HSIZE);
+    obj_set_pos(&obj_buffer[3], CENTER_X + 1*SPRITE_HSIZE, fx2int(title_y) + CENTER_Y - 2*SPRITE_HSIZE);
+    obj_set_pos(&obj_buffer[4], CENTER_X - 3*SPRITE_HSIZE, fx2int(title_y) + CENTER_Y);
+    obj_set_pos(&obj_buffer[5], CENTER_X - 1*SPRITE_HSIZE, fx2int(title_y) + CENTER_Y);
+    obj_set_pos(&obj_buffer[6], CENTER_X + 1*SPRITE_HSIZE, fx2int(title_y) + CENTER_Y);
 }
 
 void _update_title_wave(void) {
@@ -47,8 +53,12 @@ void _update_title_wave(void) {
 
 void menu_init_sprites(void) {
     // Setup sprites
+    // Super text
+    obj_set_attr(&obj_buffer[0], ATTR0_SQUARE, ATTR1_SIZE_32, ATTR2_PALBANK(1) | TITLE_TILES);
+    pal_obj_bank[1][3] = CLR_RED;
+    // Carpet Chase text
     for(int i = 0; i < 6; ++i) {
-        obj_set_attr(&obj_buffer[i], ATTR0_SQUARE, ATTR1_SIZE_64, ATTR2_PALBANK(0) | (64 * i));
+        obj_set_attr(&obj_buffer[i+1], ATTR0_SQUARE, ATTR1_SIZE_64, ATTR2_PALBANK(0) | (64 * i));
     }
     // Temp position
     title_accy = -TITLE_WAVE_ACCY;
@@ -78,12 +88,13 @@ void menu_state_on_entry(void) {
     // Setup sprite tiles
     memcpy16(&pal_obj_mem[0], titlePal, titlePalLen / sizeof(u16));
     memcpy32(tile_mem[4], titleTiles, titleTilesLen / sizeof(u32));
+    memcpy32(&tile_mem[4][TITLE_TILES], superTiles, superTilesLen / sizeof(u32));
 
     menu_init_sprites();
 
     // Set up mode7
     m7_camera_t cam = {
-        {int2fx(0), int2fx(16), int2fx(0)}, // pos.x,y,z
+        {int2fx(0), int2fx(32), int2fx(0)}, // pos.x,y,z
         0, 0,                               // pitch, yaw
         // u, v, w, unit vectors
         { int2fx(1), 0, 0 }, {0, int2fx(1), 0}, {0, 0, int2fx(1)}

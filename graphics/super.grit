@@ -1,0 +1,3 @@
+# Titlecard (Super)
+# 4bpp, 4x4 metatiles (32x32 pixels), single palette
+-gB4 -Mw4 -Mh4 -pn 16
