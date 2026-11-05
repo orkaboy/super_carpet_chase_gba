@@ -4,13 +4,23 @@
 #include "fsm.h"
 #include "mode7.h"
 
+#include "wizard.h"
+#include "spell.h"
+
 #include "skybox.h"
 #include "desert.h"
 #include "bgpal.h"
 
 #include <tonc.h>
 
+FIXED game_scroll_speed = 0;
+#define GAME_SCROLL_ACC 1
+#define GAME_SCROLL_MAX float2fx(1.0)
+
 void game_state_on_entry(void) {
+    // Initialize state
+    game_scroll_speed = 0;
+
     // Clear sprites
     oam_init(obj_buffer, NUM_HW_SPRITES);
 
@@ -49,10 +59,6 @@ void game_state_on_entry(void) {
     // For mode7
 	irq_add(II_HBLANK, (fnptr)m7_hbl_gnd);
 }
-
-FIXED game_scroll_speed = 0;
-#define GAME_SCROLL_ACC 1
-#define GAME_SCROLL_MAX float2fx(1.0)
 
 int game_state_update(void) {
     // Handle input
