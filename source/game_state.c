@@ -17,10 +17,10 @@ FIXED game_scroll_speed = 0;
 #define GAME_SCROLL_ACC 1
 #define GAME_SCROLL_MAX float2fx(1.0)
 
-void game_state_on_entry(void) {
-    // Initialize state
-    game_scroll_speed = 0;
+wizard_t player;
+wizard_t boss;
 
+void game_state_on_entry(void) {
     // Clear sprites
     oam_init(obj_buffer, NUM_HW_SPRITES);
 
@@ -53,6 +53,13 @@ void game_state_on_entry(void) {
     REG_BLDCNT = BLD_BUILD(BLD_BG2, BLD_BACKDROP, 1);
     pal_bg_mem[0] = CLR_SKYBLUE;
 
+    // Initialize state
+    game_scroll_speed = 0;
+    init_spells();
+    init_wizard(&player);
+    init_wizard(&boss);
+    player.pos.y = PLAYER_Y_PLANE;
+    boss.pos.y = BOSS_Y_PLANE;
 
     // TODO: Set display control register
     REG_DISPCNT = DCNT_BG2 | DCNT_OBJ | DCNT_OBJ_1D;
@@ -65,6 +72,14 @@ int game_state_update(void) {
     if(key_hit(KEY_START)) {
         // TODO: Add fade to black
         return STATE_OUTRO;
+    }
+    if(key_hit(KEY_UP) && !player.jumping) {
+        player.jumping = 1;
+        player.vel.y = PLAYER_JUMP_VEL;
+    }
+    player.vel.x = key_tri_horz() * PLAYER_X_SPEED;
+    if(player.jumping) {
+        player.vel.y += PLAYER_JUMP_GRAVITY;
     }
 
     // Speed up game scroll
@@ -81,6 +96,18 @@ int game_state_update(void) {
     m7_prep_horizon(&m7_level);
     m7_update_sky(&m7_level);
     m7_prep_affines(&m7_level);
+
+    update_spells();
+    update_wizard(&player);
+    update_wizard(&boss);
+
+    // Bind player position
+    player.pos.x = clamp(player.pos.x, PLAYER_X_MIN, PLAYER_X_MAX);
+    player.pos.y = min(player.pos.y, PLAYER_Y_PLANE);
+    if(player.pos.y >= PLAYER_Y_PLANE) {
+        player.vel.y = 0;
+        player.jumping = 0;
+    }
 
     return STATE_GAME;
 }
