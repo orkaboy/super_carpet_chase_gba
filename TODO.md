@@ -5,15 +5,21 @@
     [x] FSM structure for overarching game states (menu/cutscene/game etc.)
     [x] Menu
         [ ] Fade to black
-        [ ] Add "Super"
+        [x] Add "Super"
         [ ] Add "Press Start"
     [ ] Intro
-        [ ] Text engine/font (use tte? or just a bitmap font?)
+        [x] Text engine/font (use tte? or just a bitmap font?)
         [ ] Graphics
             [ ] BG, wizards
             [ ] Special effects (palette swap)
         [ ] Script/storyboard
     [ ] Game
+        [ ] BG0?
+        [ ] BG1?
+        [ ] Scrolling BG2 (affine)
+        [ ] UI via sprites
+        [ ] Sprites (set up sprite budget)
+            [ ] 32 Affines for projectiles moving along the Z axis
     [ ] Game Over
     [ ] Outro
 [ ] Mode7 background
