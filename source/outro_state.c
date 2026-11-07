@@ -7,7 +7,7 @@ void outro_state_on_entry(void) {
     // Clear sprites
     oam_init(obj_buffer, NUM_HW_SPRITES);
     // TODO: Set display control register
-    REG_DISPCNT = 0;
+    REG_DISPCNT = DCNT_MODE0;
 }
 
 int outro_state_update(void) {
