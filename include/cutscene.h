@@ -9,12 +9,16 @@ enum cutscene_frame_type {
     CS_TYPE_WAIT,
 };
 
+#define CUTSCENE_BG_NR 3
+#define CUTSCENE_BG_LAYER DCNT_BG3
+
 typedef struct cs_frame_t {
     int type;
     int timer;
     int len;
     char* text;
     int bg;
+    int color;
 } cs_frame_t;
 
 typedef struct cutscene_t {

@@ -8,6 +8,22 @@ void init_cutscene(const cs_frame_t* frames, int len) {
     _cs.frame = 0;
     _cs.len = len;
     _cs.frames = frames;
+    
+    tte_init_chr4c(
+        CUTSCENE_BG_NR,
+        BG_CBB(0) | BG_SBB(31),
+        0xF000, // Screen-entry base, sub-palette 15
+        bytes2word(15, 0, 0, 0), // cattrs(INK, SHADOW)
+        CLR_WHITE,
+        NULL, // Font
+        (fnDrawg)chr4c_drawg_b1cts_fast
+    );
+
+    pal_bg_mem[0] = CLR_BLACK;
+
+    REG_BG3HOFS = -32;
+    REG_BG3VOFS = -128;
+
     // Clear the text layer
     tte_set_pos(0,0);
     tte_erase_screen();
@@ -27,6 +43,7 @@ int update_cutscene() {
             break;
         }
         case CS_TYPE_TEXT: {
+            tte_set_color(TTE_INK, cur_frame->color);
             // Check for last char
             if(_cs.charframe < cur_frame->len) {
                 _cs.frametime++;
