@@ -8,6 +8,12 @@ static inline void _reset_cursor() {
     tte_erase_screen();
 }
 
+static inline void _next_frame() {
+    _cs.frame++;
+    _cs.frametime = 0;
+    _cs.charframe = 0;
+}
+
 void init_cutscene(const cs_frame_t* frames, int len) {
     _cs.charframe = 0;
     _cs.frametime = 0;
@@ -40,8 +46,7 @@ int update_cutscene() {
         case CS_TYPE_IMG: {
             _cs.frametime++;
             if(_cs.frametime >= cur_frame->timer) {
-                _cs.frame++;
-                _cs.frametime = 0;
+                _next_frame();
             }
             // TODO: Move/show image layer
             break;
@@ -65,9 +70,7 @@ int update_cutscene() {
             } else {
                 // Advance text
                 if(key_hit(KEY_A)) {
-                    _cs.frame++;
-                    _cs.frametime = 0;
-                    _cs.charframe = 0;
+                    _next_frame();
                     // Clear the text layer
                     _reset_cursor();
                 }
@@ -77,16 +80,13 @@ int update_cutscene() {
         case CS_TYPE_WAIT: {
             _cs.frametime++;
             if(_cs.frametime >= cur_frame->timer) {
-                _cs.frame++;
-                _cs.frametime = 0;
+                _next_frame();
             }
             break;
         }
         // Fallback
         default:
-            _cs.frame++;
-            _cs.frametime = 0;
-            _cs.charframe = 0;
+            _next_frame();
             break;
     }
 
