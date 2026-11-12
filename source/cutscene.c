@@ -2,6 +2,8 @@
 
 static cutscene_t _cs;
 
+static FIXED _img_val[CUTSCENE_IMAGE_LAYERS];        // Scratch value
+
 static inline void _reset_cursor() {
     // Clear the text layer
     tte_set_pos(32, 128);
@@ -12,14 +14,24 @@ static inline void _next_frame() {
     _cs.frame++;
     _cs.frametime = 0;
     _cs.charframe = 0;
+    _cs.first_frame = 1;
 }
 
-void init_cutscene(const cs_frame_t* frames, int len) {
+static inline int _first_frame() {
+    return _cs.first_frame;
+}
+
+void init_cutscene(const cs_frame_t* frames, int len, int dispcnt) {
     _cs.charframe = 0;
     _cs.frametime = 0;
+    _cs.first_frame = 1;
     _cs.frame = 0;
     _cs.len = len;
     _cs.frames = frames;
+    _cs.dispcnt = dispcnt;
+
+    // Set display control register
+    REG_DISPCNT = dispcnt;
 
     tte_init_chr4c(
         CUTSCENE_BG_NR,
@@ -33,8 +45,8 @@ void init_cutscene(const cs_frame_t* frames, int len) {
 
     pal_bg_mem[0] = CLR_BLACK;
 
-    REG_BG3HOFS = 0; //-32;
-    REG_BG3VOFS = 0; //-128;
+    REG_BG_OFS[CUTSCENE_BG_NR].x = 0;
+    REG_BG_OFS[CUTSCENE_BG_NR].y = 0;
 
     _reset_cursor();
 }
@@ -44,14 +56,59 @@ int update_cutscene() {
 
     switch(cur_frame->type) {
         case CS_TYPE_IMG: {
-            _cs.frametime++;
             if(_cs.frametime >= cur_frame->timer) {
                 _next_frame();
+            } else {
+                const cs_img_frame_t* cur_img = cur_frame->img;
+                for(int i = 0; i < cur_frame->len; ++i, cur_img++) {
+                    if(_cs.frametime < cur_img->start_frame) {
+                        continue;
+                    } else if(_cs.frametime > cur_img->end_frame) {
+                        continue;
+                    }
+                    // First frame
+                    if(_cs.frametime == cur_img->start_frame) {
+                        _img_val[i] = cur_img->start;
+                    } else {
+                        _img_val[i] += cur_img->speed;
+                    }
+                    // Update
+                    switch(cur_img->type) {
+                        // TODO: Fade in/out with blend
+                        case CSI_TYPE_HIDE:
+                            if(_cs.frametime == cur_img->end_frame) {
+                                _cs.dispcnt &= ~DCNT_LAYER(cur_img->bg);
+                            }
+                            break;
+                        case CSI_TYPE_SHOW:
+                            if(_cs.frametime == cur_img->end_frame) {
+                                _cs.dispcnt |= DCNT_LAYER(cur_img->bg);
+                            }
+                            break;
+                        case CSI_TYPE_MOVEX:
+                            REG_BG_OFS[cur_img->bg].x = fx2int(_img_val[i]);
+                            break;
+                        case CSI_TYPE_MOVEY:
+                            REG_BG_OFS[cur_img->bg].y = fx2int(_img_val[i]);
+                            break;
+                        case CSI_TYPE_SET_SE:
+                            // Change base image on BG (equivalent to swapping sprite frame)
+                            REG_BGCNT[cur_img->bg] &= ~BG_SBB_MASK;
+                            REG_BGCNT[cur_img->bg] |= BG_SBB(cur_img->se);
+                            break;
+                        default: break;
+                    }
+                }
             }
-            // TODO: Move/show image layer
+            _cs.frametime++;
             break;
         }
         case CS_TYPE_TEXT: {
+            if(_first_frame()) {
+                _cs.first_frame = 0;
+                // Clear the text layer
+                _reset_cursor();
+            }
             tte_set_color(TTE_INK, cur_frame->color);
             // Check for last char
             if(_cs.charframe < cur_frame->len) {
@@ -71,8 +128,6 @@ int update_cutscene() {
                 // Advance text
                 if(key_hit(KEY_A)) {
                     _next_frame();
-                    // Clear the text layer
-                    _reset_cursor();
                 }
             }
             break;

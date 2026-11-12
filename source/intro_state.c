@@ -16,10 +16,7 @@ void intro_state_on_entry(void) {
     // Clear sprites
     oam_init(obj_buffer, NUM_HW_SPRITES);
 
-    init_cutscene(_intro_cs, NUM_INTRO_FRAMES);
-
-    // TODO: Set display control register
-    REG_DISPCNT = DCNT_MODE0 | CUTSCENE_BG_LAYER;
+    init_cutscene(_intro_cs, NUM_INTRO_FRAMES, DCNT_MODE0 | CUTSCENE_BG_LAYER);
 }
 
 int intro_state_update(void) {
