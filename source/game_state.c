@@ -15,7 +15,12 @@
 
 FIXED game_scroll_speed = 0;
 #define GAME_SCROLL_ACC 1
-#define GAME_SCROLL_MAX float2fx(1.0)
+#define GAME_SCROLL_MAX float2fx(2.0)
+
+FIXED game_height = 0;
+#define GAME_HEIGHT_VEL float2fx(0.1)
+#define GAME_HEIGHT_START int2fx(32)
+#define GAME_HEIGHT_MAX int2fx(64)
 
 wizard_t player;
 wizard_t boss;
@@ -37,7 +42,7 @@ void game_state_on_entry(void) {
 
     // Set up mode7
     m7_camera_t cam = {
-        {int2fx(0), int2fx(32), int2fx(0)}, // pos.x,y,z
+        {int2fx(0), GAME_HEIGHT_START, int2fx(0)}, // pos.x,y,z
         0, 0,                               // pitch, yaw
         // u, v, w, unit vectors
         { int2fx(1), 0, 0 }, {0, int2fx(1), 0}, {0, 0, int2fx(1)}
@@ -55,6 +60,7 @@ void game_state_on_entry(void) {
 
     // Initialize state
     game_scroll_speed = 0;
+    game_height = GAME_HEIGHT_START;
     init_spells();
     init_wizard(&player);
     init_wizard(&boss);
@@ -84,12 +90,16 @@ int game_state_update(void) {
 
     // Speed up game scroll
     game_scroll_speed += GAME_SCROLL_ACC;
-    game_scroll_speed = clamp(game_scroll_speed, 0, GAME_SCROLL_MAX);
+    game_scroll_speed = min(game_scroll_speed, GAME_SCROLL_MAX);
+
+    FIXED rise_speed = (game_height < GAME_HEIGHT_MAX) ? GAME_HEIGHT_VEL : 0;
+    game_height += GAME_HEIGHT_VEL;
+    game_height = min(game_height, GAME_HEIGHT_MAX);
 
     // Set camera rotation
     m7_rotate(&m7_level.camera, int2fx(7), 0);
     // Move camera slowly forward
-    VECTOR dir = {0, 0, -game_scroll_speed};
+    VECTOR dir = {0, rise_speed, -game_scroll_speed};
     m7_translate_level(&m7_level.camera, &dir);
 
     // Handle mode7 bg
