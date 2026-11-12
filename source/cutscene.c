@@ -2,13 +2,19 @@
 
 static cutscene_t _cs;
 
+static inline void _reset_cursor() {
+    // Clear the text layer
+    tte_set_pos(32, 128);
+    tte_erase_screen();
+}
+
 void init_cutscene(const cs_frame_t* frames, int len) {
     _cs.charframe = 0;
     _cs.frametime = 0;
     _cs.frame = 0;
     _cs.len = len;
     _cs.frames = frames;
-    
+
     tte_init_chr4c(
         CUTSCENE_BG_NR,
         BG_CBB(0) | BG_SBB(31),
@@ -21,12 +27,10 @@ void init_cutscene(const cs_frame_t* frames, int len) {
 
     pal_bg_mem[0] = CLR_BLACK;
 
-    REG_BG3HOFS = -32;
-    REG_BG3VOFS = -128;
+    REG_BG3HOFS = 0; //-32;
+    REG_BG3VOFS = 0; //-128;
 
-    // Clear the text layer
-    tte_set_pos(0,0);
-    tte_erase_screen();
+    _reset_cursor();
 }
 
 int update_cutscene() {
@@ -65,8 +69,7 @@ int update_cutscene() {
                     _cs.frametime = 0;
                     _cs.charframe = 0;
                     // Clear the text layer
-                    tte_set_pos(0,0);
-                    tte_erase_screen();
+                    _reset_cursor();
                 }
             }
             break;
