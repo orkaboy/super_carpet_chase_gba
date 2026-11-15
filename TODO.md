@@ -20,6 +20,7 @@
         [ ] UI via sprites
         [ ] Sprites (set up sprite budget)
             [ ] 32 Affines for projectiles moving along the Z axis
+            [x] Player carpet, animated
     [ ] Game Over
     [ ] Outro
 [ ] Mode7 background

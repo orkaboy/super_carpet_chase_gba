@@ -11,6 +11,9 @@
 #include "desert.h"
 #include "bgpal.h"
 
+#include "carpet.h"
+#include "objpal.h"
+
 #include <tonc.h>
 
 FIXED game_scroll_speed = 0;
@@ -25,16 +28,43 @@ FIXED game_height = 0;
 wizard_t player;
 wizard_t boss;
 
+// TODO: Move elsewhere?
+#define PCARPET_HWSPRITE        0
+#define PCARPET_TID             0
+#define PCARPET_FRAMES          8
+#define PCARPET_FRAME_TIME      8
+#define PCARPET_W               32
+#define PCARPET_H               32
+#define PCARPET_TILE_PER_FRAME  (PCARPET_W / 8) * (PCARPET_H / 8)
+
+void update_carpet(int hwsprite, int tid_offset) {
+    static int anim_frame = 0;
+    static int anim_timer = 0;
+
+    if(anim_timer < PCARPET_FRAME_TIME) {
+        anim_timer++;
+    } else {
+        anim_timer = 0;
+        anim_frame = (anim_frame + 1) % PCARPET_FRAMES;
+        // Update to the new frame
+        obj_buffer[hwsprite].attr2 &= ~ATTR2_ID_MASK;
+        obj_buffer[hwsprite].attr2 |= tid_offset + anim_frame * PCARPET_TILE_PER_FRAME;
+    }
+}
+
 void game_state_on_entry(void) {
     // Clear sprites
     oam_init(obj_buffer, NUM_HW_SPRITES);
 
     // Load palettes
     LZ77UnCompVram(bgPal, pal_bg_mem);
+    LZ77UnCompVram(objPal, pal_obj_mem);
 
     // Load tiles
     LZ77UnCompVram(desertTiles, tile_mem[0]);
     LZ77UnCompVram(skyboxTiles, &tile_mem[0][128]); // Halfway into the page (note, the sky tile IDs are offset too)
+
+    LZ77UnCompVram(carpetTiles, &tile_mem[4][0]); // 256x32px = 32x4 tiles = 128 tiles in
 
     // Load map
     LZ77UnCompVram(desertMap, se_mem[24]);
@@ -57,6 +87,11 @@ void game_state_on_entry(void) {
     // Initialize fog (alpha blend to BG transparency color)
     REG_BLDCNT = BLD_BUILD(BLD_BG2, BLD_BACKDROP, 1);
     pal_bg_mem[0] = CLR_SKYBLUE;
+
+    // TODO: Move elsewhere?
+    // TODO: Defines for hwsprite index, palette, tile
+    obj_set_attr(&obj_buffer[PCARPET_HWSPRITE], ATTR0_SQUARE, ATTR1_SIZE_32, ATTR2_PRIO(2) | ATTR2_PALBANK(0) | PCARPET_TID);
+    obj_set_pos(&obj_buffer[PCARPET_HWSPRITE], SCREEN_WIDTH/2 - 16, SCREEN_HEIGHT - 32);
 
     // Initialize state
     game_scroll_speed = 0;
@@ -111,6 +146,8 @@ int game_state_update(void) {
     update_wizard(&player);
     update_wizard(&boss);
 
+    update_carpet(PCARPET_HWSPRITE, PCARPET_TID);
+
     // Bind player position
     player.pos.x = clamp(player.pos.x, PLAYER_X_MIN, PLAYER_X_MAX);
     player.pos.y = min(player.pos.y, PLAYER_Y_PLANE);
@@ -118,6 +155,9 @@ int game_state_update(void) {
         player.vel.y = 0;
         player.jumping = 0;
     }
+
+    // TODO: Carpet should stay at same height when jumping
+    obj_set_pos(&obj_buffer[PCARPET_HWSPRITE], fx2int(player.pos.x) - PCARPET_W/2, fx2int(player.pos.y)-PCARPET_H/2);
 
     return STATE_GAME;
 }

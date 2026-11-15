@@ -6,9 +6,9 @@
 #define PLAYER_X_MIN        int2fx(16)
 #define PLAYER_X_MAX        int2fx(SCREEN_WIDTH - 16)
 #define PLAYER_X_SPEED      float2fx(4.0)
-#define PLAYER_Y_PLANE      int2fx(SCREEN_HEIGHT - 24)
-#define PLAYER_JUMP_VEL     float2fx(-6.0)
-#define PLAYER_JUMP_GRAVITY float2fx(0.1)
+#define PLAYER_Y_PLANE      int2fx(SCREEN_HEIGHT - 16)
+#define PLAYER_JUMP_VEL     float2fx(-4.5)
+#define PLAYER_JUMP_GRAVITY float2fx(0.2)
 
 #define BOSS_Y_PLANE        int2fx(64)
 
