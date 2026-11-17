@@ -13,6 +13,7 @@
 
 #include "carpet.h"
 #include "pwizard.h"
+#include "pspell.h"
 #include "objpal.h"
 
 #include <tonc.h>
@@ -29,6 +30,7 @@ FIXED game_height = 0;
 wizard_t player;
 wizard_t boss;
 
+// TODO: Assign correct sprite ranges
 // TODO: Move elsewhere?
 #define PWIZARD_HWSPRITE        0
 #define PWIZARD_TID             128
@@ -45,6 +47,14 @@ wizard_t boss;
 #define PCARPET_W               32
 #define PCARPET_H               32
 #define PCARPET_TILE_PER_FRAME  (PCARPET_W / 8) * (PCARPET_H / 8)
+
+#define PSPELL_HWSPRITE        2
+#define PSPELL_TID             256 // TODO
+#define PSPELL_FRAMES          8
+#define PSPELL_FRAME_TIME      8
+#define PSPELL_W               32
+#define PSPELL_H               32
+#define PSPELL_TILE_PER_FRAME  (PCARPET_W / 8) * (PCARPET_H / 8)
 
 void update_carpet(int hwsprite, int tid_offset) {
     static int anim_frame = 0;
@@ -75,6 +85,7 @@ void game_state_on_entry(void) {
 
     LZ77UnCompVram(carpetTiles, &tile_mem[4][0]); // 256x32px = 32x4 tiles = 128 tiles in
     LZ77UnCompVram(pwizardTiles, &tile_mem[4][128]); // 256x32px = 32x4 tiles = 256 tiles in
+    LZ77UnCompVram(pspellTiles, &tile_mem[4][256]); // 16x16 = 2x2 tiles = 260 tiles in //TODO: How long animation?
 
     // Load map
     LZ77UnCompVram(desertMap, se_mem[24]);
@@ -101,10 +112,14 @@ void game_state_on_entry(void) {
     // TODO: Move elsewhere?
     // TODO: Defines for hwsprite index, palette, tile
     obj_set_attr(&obj_buffer[PWIZARD_HWSPRITE], ATTR0_SQUARE, ATTR1_SIZE_32, ATTR2_PRIO(2) | ATTR2_PALBANK(1) | PWIZARD_TID);
-    obj_set_pos(&obj_buffer[PWIZARD_HWSPRITE], SCREEN_WIDTH/2 - 16, SCREEN_HEIGHT - 32);
+    obj_set_pos(&obj_buffer[PWIZARD_HWSPRITE], SCREEN_WIDTH/2 - PWIZARD_W/2, SCREEN_HEIGHT - 32);
 
     obj_set_attr(&obj_buffer[PCARPET_HWSPRITE], ATTR0_SQUARE, ATTR1_SIZE_32, ATTR2_PRIO(2) | ATTR2_PALBANK(0) | PCARPET_TID);
-    obj_set_pos(&obj_buffer[PCARPET_HWSPRITE], SCREEN_WIDTH/2 - 16, SCREEN_HEIGHT - 32);
+    obj_set_pos(&obj_buffer[PCARPET_HWSPRITE], SCREEN_WIDTH/2 - PCARPET_W, SCREEN_HEIGHT - 32);
+
+    // TODO: TEMP, move to spell
+    obj_set_attr(&obj_buffer[PSPELL_HWSPRITE], ATTR0_SQUARE | ATTR0_HIDE, ATTR1_SIZE_16, ATTR2_PRIO(1) | ATTR2_PALBANK(4) | PSPELL_TID);
+    obj_set_pos(&obj_buffer[PSPELL_HWSPRITE], SCREEN_WIDTH/2 - 8, SCREEN_HEIGHT/2 - 8);
 
 
     // Initialize state
@@ -137,7 +152,17 @@ int game_state_update(void) {
     if(player.jumping) {
         player.vel.y += PLAYER_JUMP_GRAVITY;
     }
-    // TODO: Fire with A?
+    // TODO: Fire with A? // TODO: TEMP
+    if(key_hit(KEY_A)) {
+        static int firing = 0;// TEMP
+        firing = !firing;
+        if(firing) {
+            obj_buffer[PSPELL_HWSPRITE].attr0 &= ~ATTR0_HIDE;
+        } else {
+            obj_buffer[PSPELL_HWSPRITE].attr0 |= ATTR0_HIDE;
+        }
+    }
+    // TODO: Shield/Special with L/B?
 
     // Speed up game scroll
     game_scroll_speed += GAME_SCROLL_ACC;

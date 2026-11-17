@@ -42,7 +42,6 @@
 [ ] Game logic
     [ ] Collisions
     [ ] Movement updates
-        [ ] Change button for jump? Up on d-pad doesn't feel good.
     [ ] I-frames
     [ ] Fire spells
 [ ] Audio
@@ -60,7 +59,8 @@
     [ ] New spells (scrolls?)
     [ ] Shield
 [ ] Story
-    [ ] Cut-scene engine
+    [x] Cut-scene engine
+        [ ] Test image stuff.
     [ ] Close-up wizard art
     [ ] Text
     [ ] Fade to black effects

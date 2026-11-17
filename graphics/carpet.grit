@@ -1,2 +1,2 @@
-# Sprites. 4bpp, 1 palette. 16x16 meta tiles, LZ77 compressed.
+# Sprites. 4bpp, 1 palette. 32x32 meta tiles, LZ77 compressed.
 -gB4 -Mh 4 -Mw 4 -p! -Zl
