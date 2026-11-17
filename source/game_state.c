@@ -12,6 +12,7 @@
 #include "bgpal.h"
 
 #include "carpet.h"
+#include "pwizard.h"
 #include "objpal.h"
 
 #include <tonc.h>
@@ -29,7 +30,15 @@ wizard_t player;
 wizard_t boss;
 
 // TODO: Move elsewhere?
-#define PCARPET_HWSPRITE        0
+#define PWIZARD_HWSPRITE        0
+#define PWIZARD_TID             128
+#define PWIZARD_FRAMES          1 // TODO
+#define PWIZARD_FRAME_TIME      8
+#define PWIZARD_W               32
+#define PWIZARD_H               32
+#define PWIZARD_TILE_PER_FRAME  (PWIZARD_W / 8) * (PWIZARD_H / 8)
+
+#define PCARPET_HWSPRITE        1
 #define PCARPET_TID             0
 #define PCARPET_FRAMES          8
 #define PCARPET_FRAME_TIME      8
@@ -65,6 +74,7 @@ void game_state_on_entry(void) {
     LZ77UnCompVram(skyboxTiles, &tile_mem[0][128]); // Halfway into the page (note, the sky tile IDs are offset too)
 
     LZ77UnCompVram(carpetTiles, &tile_mem[4][0]); // 256x32px = 32x4 tiles = 128 tiles in
+    LZ77UnCompVram(pwizardTiles, &tile_mem[4][128]); // 256x32px = 32x4 tiles = 256 tiles in
 
     // Load map
     LZ77UnCompVram(desertMap, se_mem[24]);
@@ -90,8 +100,12 @@ void game_state_on_entry(void) {
 
     // TODO: Move elsewhere?
     // TODO: Defines for hwsprite index, palette, tile
+    obj_set_attr(&obj_buffer[PWIZARD_HWSPRITE], ATTR0_SQUARE, ATTR1_SIZE_32, ATTR2_PRIO(2) | ATTR2_PALBANK(1) | PWIZARD_TID);
+    obj_set_pos(&obj_buffer[PWIZARD_HWSPRITE], SCREEN_WIDTH/2 - 16, SCREEN_HEIGHT - 32);
+
     obj_set_attr(&obj_buffer[PCARPET_HWSPRITE], ATTR0_SQUARE, ATTR1_SIZE_32, ATTR2_PRIO(2) | ATTR2_PALBANK(0) | PCARPET_TID);
     obj_set_pos(&obj_buffer[PCARPET_HWSPRITE], SCREEN_WIDTH/2 - 16, SCREEN_HEIGHT - 32);
+
 
     // Initialize state
     game_scroll_speed = 0;
@@ -114,7 +128,8 @@ int game_state_update(void) {
         // TODO: Add fade to black
         return STATE_OUTRO;
     }
-    if(key_hit(KEY_UP) && !player.jumping) {
+    // Jump with B?
+    if(key_hit(KEY_B) && !player.jumping) {
         player.jumping = 1;
         player.vel.y = PLAYER_JUMP_VEL;
     }
@@ -122,6 +137,7 @@ int game_state_update(void) {
     if(player.jumping) {
         player.vel.y += PLAYER_JUMP_GRAVITY;
     }
+    // TODO: Fire with A?
 
     // Speed up game scroll
     game_scroll_speed += GAME_SCROLL_ACC;
@@ -143,6 +159,7 @@ int game_state_update(void) {
     m7_prep_affines(&m7_level);
 
     update_spells();
+    // TODO: Animate wizards
     update_wizard(&player);
     update_wizard(&boss);
 
@@ -156,8 +173,9 @@ int game_state_update(void) {
         player.jumping = 0;
     }
 
-    // TODO: Carpet should stay at same height when jumping
-    obj_set_pos(&obj_buffer[PCARPET_HWSPRITE], fx2int(player.pos.x) - PCARPET_W/2, fx2int(player.pos.y)-PCARPET_H/2);
+    // Carpet should stay at same height when jumping
+    obj_set_pos(&obj_buffer[PWIZARD_HWSPRITE], fx2int(player.pos.x) - PWIZARD_W/2, fx2int(player.pos.y)-PWIZARD_H/2-18);
+    obj_set_pos(&obj_buffer[PCARPET_HWSPRITE], fx2int(player.pos.x) - PCARPET_W/2, fx2int(PLAYER_Y_PLANE)-PCARPET_H/2);
 
     return STATE_GAME;
 }

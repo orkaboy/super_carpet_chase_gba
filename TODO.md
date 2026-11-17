@@ -42,6 +42,7 @@
 [ ] Game logic
     [ ] Collisions
     [ ] Movement updates
+        [ ] Change button for jump? Up on d-pad doesn't feel good.
     [ ] I-frames
     [ ] Fire spells
 [ ] Audio
