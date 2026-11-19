@@ -7,6 +7,8 @@
 #include "wizard.h"
 #include "spell.h"
 
+#include "sprites.h"
+
 #include "skybox.h"
 #include "desert.h"
 #include "bgpal.h"
@@ -30,32 +32,7 @@ FIXED game_height = 0;
 wizard_t player;
 wizard_t boss;
 
-// TODO: Assign correct sprite ranges
-// TODO: Move elsewhere?
-#define PWIZARD_HWSPRITE        0
-#define PWIZARD_TID             128
-#define PWIZARD_FRAMES          1 // TODO
-#define PWIZARD_FRAME_TIME      8
-#define PWIZARD_W               32
-#define PWIZARD_H               32
-#define PWIZARD_TILE_PER_FRAME  (PWIZARD_W / 8) * (PWIZARD_H / 8)
-
-#define PCARPET_HWSPRITE        1
-#define PCARPET_TID             0
-#define PCARPET_FRAMES          8
-#define PCARPET_FRAME_TIME      8
-#define PCARPET_W               32
-#define PCARPET_H               32
-#define PCARPET_TILE_PER_FRAME  (PCARPET_W / 8) * (PCARPET_H / 8)
-
-#define PSPELL_HWSPRITE        2
-#define PSPELL_TID             256 // TODO
-#define PSPELL_FRAMES          8
-#define PSPELL_FRAME_TIME      8
-#define PSPELL_W               32
-#define PSPELL_H               32
-#define PSPELL_TILE_PER_FRAME  (PCARPET_W / 8) * (PCARPET_H / 8)
-
+// TODO: Move elsewhere
 void update_carpet(int hwsprite, int tid_offset) {
     static int anim_frame = 0;
     static int anim_timer = 0;
@@ -66,8 +43,7 @@ void update_carpet(int hwsprite, int tid_offset) {
         anim_timer = 0;
         anim_frame = (anim_frame + 1) % PCARPET_FRAMES;
         // Update to the new frame
-        obj_buffer[hwsprite].attr2 &= ~ATTR2_ID_MASK;
-        obj_buffer[hwsprite].attr2 |= tid_offset + anim_frame * PCARPET_TILE_PER_FRAME;
+        obj_set_tid(hwsprite, tid_offset + anim_frame * PCARPET_TILE_PER_FRAME);
     }
 }
 
@@ -143,8 +119,8 @@ int game_state_update(void) {
         // TODO: Add fade to black
         return STATE_OUTRO;
     }
-    // Jump with B?
-    if(key_hit(KEY_B) && !player.jumping) {
+    // Jump with A
+    if(key_hit(KEY_A) && !player.jumping) {
         player.jumping = 1;
         player.vel.y = PLAYER_JUMP_VEL;
     }
@@ -152,15 +128,10 @@ int game_state_update(void) {
     if(player.jumping) {
         player.vel.y += PLAYER_JUMP_GRAVITY;
     }
-    // TODO: Fire with A? // TODO: TEMP
-    if(key_hit(KEY_A)) {
-        static int firing = 0;// TEMP
-        firing = !firing;
-        if(firing) {
-            obj_buffer[PSPELL_HWSPRITE].attr0 &= ~ATTR0_HIDE;
-        } else {
-            obj_buffer[PSPELL_HWSPRITE].attr0 |= ATTR0_HIDE;
-        }
+    // TODO: Fire with B? // TODO: TEMP
+    if(key_hit(KEY_B)) {
+        //TODO: Fire delay
+        spawn_player_spell();
     }
     // TODO: Shield/Special with L/B?
 

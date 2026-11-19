@@ -2,6 +2,7 @@
 #define GAME_STATE_H
 
 #include <tonc.h>
+#include "wizard.h"
 
 #define PLAYER_X_MIN        int2fx(16)
 #define PLAYER_X_MAX        int2fx(SCREEN_WIDTH - 16)
@@ -15,5 +16,8 @@
 void game_state_on_entry(void);
 int game_state_update(void);
 void game_state_on_exit(void);
+
+extern wizard_t player;
+extern wizard_t boss;
 
 #endif
